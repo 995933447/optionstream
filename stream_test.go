@@ -49,7 +49,8 @@ func TestQueryStream(t *testing.T) {
 	t.Logf("j:%s", string(j))
 
 	queryStreamProcessor := NewQueryStreamProcessor(queryStream)
-	queryStreamProcessor.OnString("test_key", func(val string) error {
+	queryStreamProcessor.
+		OnString("test_key", func(val string) error {
 			fmt.Println(val)
 			return nil
 		}).OnInt32(int32(123), func(val int32) error {
