@@ -5,21 +5,9 @@ import (
 )
 
 type Pagination struct {
-	offset int64 `access:r`
-	limit int64	`access:r`
-	total int64 `access:r`
-}
-
-func (p Pagination) Offset() int64 {
-	return p.offset
-}
-
-func (p Pagination) Limit() int64 {
-	return p.limit
-}
-
-func (p Pagination) Total() int64 {
-	return p.total
+	Offset int64 `json:"offset"`
+	Limit int64	`json:"limit"`
+	Total int64 `json:"total"`
 }
 
 type Queriable interface {
@@ -51,9 +39,9 @@ func (p QueryStreamProcessor) PaginateFrom(ctx context.Context, queriable Queria
 	}
 
 	var paginate Pagination
-	paginate.total = hitTotal
-	paginate.limit = p.stream.Limit
-	paginate.offset = p.stream.Offset
+	paginate.Total = hitTotal
+	paginate.Limit = p.stream.Limit
+	paginate.Offset = p.stream.Offset
 	return &paginate, nil
 }
 

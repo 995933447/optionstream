@@ -6,25 +6,30 @@ type Option struct {
 }
 
 type Stream struct {
-	Options []*Option
+	Options []*Option `json:"options"`
 	optionMap map[interface{}]*Option
 }
 
-func NewStream() *Stream {
-	return &Stream {
+func NewStream(options []*Option) *Stream {
+	s := &Stream {
 		optionMap: make(map[interface{}]*Option),
+		Options: options,
 	}
+	for _, option := range options {
+		s.optionMap[option.Key] = option
+	}
+	return s
 }
 
 func (s *Stream) SetOption(key interface{}, val interface{}) *Stream {
-	opt, ok := s.optionMap[key]
+	option, ok := s.optionMap[key]
 	if ok {
-		opt.Val = val
+		option.Val = val
 	} else {
-		opt = &Option{key, val}
-		s.Options = append(s.Options, opt)
+		option = &Option{key, val}
+		s.Options = append(s.Options, option)
 	}
-	s.optionMap[key] = opt
+	s.optionMap[key] = option
 	return s
 }
 
@@ -33,24 +38,34 @@ func (s *Stream) Option(key interface{}) (*Option, bool) {
 	return option, ok
 }
 
-func (s *Stream) CopyStream(otherStream *Stream, optKey interface{}, otherStreamOptKey interface{}) *Stream {
-	otherStreamOpt, ok := otherStream.Option(otherStreamOptKey)
+func (s *Stream) CopyStream(otherStream *Stream, optionKey interface{}, otherStreamOptionKey interface{}) *Stream {
+	otherStreamOption, ok := otherStream.Option(otherStreamOptionKey)
 	if ok {
-		s.SetOption(optKey, otherStreamOpt.Val)
+		s.SetOption(optionKey, otherStreamOption.Val)
 	}
 	return s
 }
 
 type QueryStream struct {
 	*Stream
-	Limit int64
-	Offset int64
+	Limit int64 `json:"limit"`
+	Offset int64 `json:"offset"`
 }
 
-func NewQueryStream() *QueryStream {
+func NewQueryStream(options []*Option) *QueryStream {
 	return &QueryStream{
-		Stream: NewStream(),
+		Stream: NewStream(options),
 	}
+}
+
+func (s *QueryStream) SetOption(key interface{}, val interface{}) *QueryStream {
+	s.Stream.SetOption(key, val)
+	return s
+}
+
+func (s *QueryStream) CopyStream(otherStream *Stream, optionKey interface{}, otherStreamOptionKey interface{}) *QueryStream {
+	s.Stream.CopyStream(otherStream, optionKey, otherStreamOptionKey)
+	return s
 }
 
 func (s *QueryStream) SetLimit(limit int64) *QueryStream {

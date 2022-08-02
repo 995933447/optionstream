@@ -39,35 +39,35 @@ type optionProcessor struct {
 	onProcFunc interface{}
 }
 
-func (p *optionProcessor) Process(opt *Option) error {
+func (p *optionProcessor) Process(option *Option) error {
 	procFunc := p.onProcFunc
 	switch p.valType {
 	case OptValTypeNone:
 		return procFunc.(onOptValNoneProcFunc)()
 	case OptValTypeBool:
-		return procFunc.(onOptValBoolProcFunc)(opt.Val.(bool))
+		return procFunc.(onOptValBoolProcFunc)(option.Val.(bool))
 	case OptValTypeInt32:
-		return procFunc.(onOptValInt32ProcFunc)(opt.Val.(int32))
+		return procFunc.(onOptValInt32ProcFunc)(option.Val.(int32))
 	case OptValTypeUint32:
-		return procFunc.(onOptValUint32ProcFunc)(opt.Val.(uint32))
+		return procFunc.(onOptValUint32ProcFunc)(option.Val.(uint32))
 	case OptValTypeInt64:
-		return procFunc.(onOptValInt64ProcFunc)(opt.Val.(int64))
+		return procFunc.(onOptValInt64ProcFunc)(option.Val.(int64))
 	case OptValTypeUint64:
-		return procFunc.(onOptValUint64ProcFunc)(opt.Val.(uint64))
+		return procFunc.(onOptValUint64ProcFunc)(option.Val.(uint64))
 	case OptValTypeString:
-		return procFunc.(onOptValStringProcFunc)(opt.Val.(string))
+		return procFunc.(onOptValStringProcFunc)(option.Val.(string))
 	case OptValTypeStringList:
-		return procFunc.(onOptValStringListProcFunc)(opt.Val.([]string))
+		return procFunc.(onOptValStringListProcFunc)(option.Val.([]string))
 	case OptValTypeUint32List:
-		return procFunc.(onOptValUint32ListProcFunc)(opt.Val.([]uint32))
+		return procFunc.(onOptValUint32ListProcFunc)(option.Val.([]uint32))
 	case OptValTypeUint64List:
-		return procFunc.(onOptValUint64ListProcFunc)(opt.Val.([]uint64))
+		return procFunc.(onOptValUint64ListProcFunc)(option.Val.([]uint64))
 	case OptValTypeInt32List:
-		return procFunc.(onOptValInt32ListProcFunc)(opt.Val.([]int32))
+		return procFunc.(onOptValInt32ListProcFunc)(option.Val.([]int32))
 	case OptValTypeInt64List:
-		return procFunc.(onOptValInt64ListProcFunc)(opt.Val.([]int64))
+		return procFunc.(onOptValInt64ListProcFunc)(option.Val.([]int64))
 	case OptValTypeTimestampRange:
-		timestamps := opt.Val.([]int64)
+		timestamps := option.Val.([]int64)
 		var beginAt, endAt int64
 		timestampNum := len(timestamps)
 		if timestampNum > 0 {
@@ -78,7 +78,7 @@ func (p *optionProcessor) Process(opt *Option) error {
 		}
 		return procFunc.(onOptValTimestampRangeProcFunc)(beginAt, endAt)
 	case OptValTypeAny:
-		return procFunc.(onOptValAnyProcFunc)(opt.Val.([]int64))
+		return procFunc.(onOptValAnyProcFunc)(option.Val.([]int64))
 	default:
 		panic("not support value type")
 	}
@@ -209,13 +209,13 @@ func (p *StreamProcessor) OnAny(key interface{}, procFunc onOptValUint64ProcFunc
 }
 
 func (p StreamProcessor) Process() error {
-	for _, opt := range p.stream.Options {
-		optProcessor, ok := p.optProcessorMap[opt.Key]
+	for _, option := range p.stream.Options {
+		optProcessor, ok := p.optProcessorMap[option.Key]
 		if !ok {
 			continue
 		}
 
-		if err := optProcessor.Process(opt); err != nil {
+		if err := optProcessor.Process(option); err != nil {
 			return err
 		}
 	}

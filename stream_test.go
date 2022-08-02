@@ -2,12 +2,14 @@ package optionstream
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 )
 
 func TestStream(t *testing.T) {
-	stream := NewStream().SetOption("test_key", "abc")
+	stream := NewStream(nil).SetOption("test_key", "abc")
+
 	err := NewStreamProcessor(stream).
 		OnString("test_key", func(val string) error {
 			fmt.Println(val)
@@ -35,16 +37,22 @@ func(q *queryHandler) Query(ctx context.Context, limit, offset int64, list inter
 }
 
 func TestQueryStream(t *testing.T) {
-	queryStream := NewQueryStream()
-	queryStreamProcessor := NewQueryStreamProcessor(queryStream)
+	queryStream := NewQueryStream(nil).
+		SetLimit(15).
+		SetOffset(5).
+		SetOption("test_key", "abc").
+		SetOption(123, 123)
+	j, err := json.Marshal(queryStream)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("j:%s", string(j))
 
-	queryStream.SetLimit(15).SetOffset(5).SetOption("test_key", "abc").SetOption(123, 123)
-	queryStreamProcessor.
-		OnString("test_key", func(val string) error {
+	queryStreamProcessor := NewQueryStreamProcessor(queryStream)
+	queryStreamProcessor.OnString("test_key", func(val string) error {
 			fmt.Println(val)
 			return nil
-		}).
-		OnInt32(int32(123), func(val int32) error {
+		}).OnInt32(int32(123), func(val int32) error {
 			fmt.Println(val)
 			return nil
 		})
@@ -53,7 +61,7 @@ func TestQueryStream(t *testing.T) {
 		pagination *Pagination
 		list []int64
 	)
-	pagination, err := queryStreamProcessor.PaginateFrom(context.TODO(), &queryHandler{}, &list)
+	pagination, err = queryStreamProcessor.PaginateFrom(context.TODO(), &queryHandler{}, &list)
 	if err != nil {
 		t.Fatal(err)
 	}
