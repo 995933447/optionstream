@@ -33,13 +33,13 @@ func (s *Stream) SetOption(key interface{}, val interface{}) *Stream {
 	return s
 }
 
-func (s *Stream) Option(key interface{}) (*Option, bool) {
+func (s *Stream) GetOption(key interface{}) (*Option, bool) {
 	option, ok := s.optionMap[key]
 	return option, ok
 }
 
 func (s *Stream) CopyStream(otherStream *Stream, optionKey interface{}, otherStreamOptionKey interface{}) *Stream {
-	otherStreamOption, ok := otherStream.Option(otherStreamOptionKey)
+	otherStreamOption, ok := otherStream.GetOption(otherStreamOptionKey)
 	if ok {
 		s.SetOption(optionKey, otherStreamOption.Val)
 	}
