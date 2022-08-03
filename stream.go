@@ -52,9 +52,11 @@ type QueryStream struct {
 	Offset int64 `json:"offset"`
 }
 
-func NewQueryStream(options []*Option) *QueryStream {
+func NewQueryStream(options []*Option, limit, offset int64) *QueryStream {
 	return &QueryStream{
 		Stream: NewStream(options),
+		Limit: limit,
+		Offset: offset,
 	}
 }
 
