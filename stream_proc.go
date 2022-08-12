@@ -19,20 +19,20 @@ const (
 	OptValTypeAny
 )
 
-type onOptValNoneProcFunc func() error
-type onOptValBoolProcFunc func(val bool) error
-type onOptValInt32ProcFunc func(val int32) error
-type onOptValInt32ListProcFunc func(val []int32) error
-type onOptValInt64ProcFunc func(val int64) error
-type onOptValInt64ListProcFunc func(val []int64) error
-type onOptValUint32ProcFunc func(val uint32) error
-type onOptValUint32ListProcFunc func(valList []uint32) error
-type onOptValUint64ProcFunc func(val uint64) error
-type onOptValUint64ListProcFunc func(val []uint64) error
-type onOptValStringListProcFunc func(val []string) error
-type onOptValStringProcFunc func(val string) error
-type onOptValTimestampRangeProcFunc func(beginAt, endAt int64) error
-type onOptValAnyProcFunc func(val interface{}) error
+type OnOptValNoneProcFunc func() error
+type OnOptValBoolProcFunc func(val bool) error
+type OnOptValInt32ProcFunc func(val int32) error
+type OnOptValInt32ListProcFunc func(val []int32) error
+type OnOptValInt64ProcFunc func(val int64) error
+type OnOptValInt64ListProcFunc func(val []int64) error
+type OnOptValUint32ProcFunc func(val uint32) error
+type OnOptValUint32ListProcFunc func(valList []uint32) error
+type OnOptValUint64ProcFunc func(val uint64) error
+type OnOptValUint64ListProcFunc func(val []uint64) error
+type OnOptValStringListProcFunc func(val []string) error
+type OnOptValStringProcFunc func(val string) error
+type OnOptValTimestampRangeProcFunc func(beginAt, endAt int64) error
+type OnOptValAnyProcFunc func(val interface{}) error
 
 type optionProcessor struct {
 	valType OptValType
@@ -43,29 +43,29 @@ func (p *optionProcessor) Process(option *Option) error {
 	procFunc := p.onProcFunc
 	switch p.valType {
 	case OptValTypeNone:
-		return procFunc.(onOptValNoneProcFunc)()
+		return procFunc.(OnOptValNoneProcFunc)()
 	case OptValTypeBool:
-		return procFunc.(onOptValBoolProcFunc)(option.Val.(bool))
+		return procFunc.(OnOptValBoolProcFunc)(option.Val.(bool))
 	case OptValTypeInt32:
-		return procFunc.(onOptValInt32ProcFunc)(option.Val.(int32))
+		return procFunc.(OnOptValInt32ProcFunc)(option.Val.(int32))
 	case OptValTypeUint32:
-		return procFunc.(onOptValUint32ProcFunc)(option.Val.(uint32))
+		return procFunc.(OnOptValUint32ProcFunc)(option.Val.(uint32))
 	case OptValTypeInt64:
-		return procFunc.(onOptValInt64ProcFunc)(option.Val.(int64))
+		return procFunc.(OnOptValInt64ProcFunc)(option.Val.(int64))
 	case OptValTypeUint64:
-		return procFunc.(onOptValUint64ProcFunc)(option.Val.(uint64))
+		return procFunc.(OnOptValUint64ProcFunc)(option.Val.(uint64))
 	case OptValTypeString:
-		return procFunc.(onOptValStringProcFunc)(option.Val.(string))
+		return procFunc.(OnOptValStringProcFunc)(option.Val.(string))
 	case OptValTypeStringList:
-		return procFunc.(onOptValStringListProcFunc)(option.Val.([]string))
+		return procFunc.(OnOptValStringListProcFunc)(option.Val.([]string))
 	case OptValTypeUint32List:
-		return procFunc.(onOptValUint32ListProcFunc)(option.Val.([]uint32))
+		return procFunc.(OnOptValUint32ListProcFunc)(option.Val.([]uint32))
 	case OptValTypeUint64List:
-		return procFunc.(onOptValUint64ListProcFunc)(option.Val.([]uint64))
+		return procFunc.(OnOptValUint64ListProcFunc)(option.Val.([]uint64))
 	case OptValTypeInt32List:
-		return procFunc.(onOptValInt32ListProcFunc)(option.Val.([]int32))
+		return procFunc.(OnOptValInt32ListProcFunc)(option.Val.([]int32))
 	case OptValTypeInt64List:
-		return procFunc.(onOptValInt64ListProcFunc)(option.Val.([]int64))
+		return procFunc.(OnOptValInt64ListProcFunc)(option.Val.([]int64))
 	case OptValTypeTimestampRange:
 		timestamps := option.Val.([]int64)
 		var beginAt, endAt int64
@@ -76,9 +76,9 @@ func (p *optionProcessor) Process(option *Option) error {
 		if timestampNum > 1 {
 			endAt = timestamps[1]
 		}
-		return procFunc.(onOptValTimestampRangeProcFunc)(beginAt, endAt)
+		return procFunc.(OnOptValTimestampRangeProcFunc)(beginAt, endAt)
 	case OptValTypeAny:
-		return procFunc.(onOptValAnyProcFunc)(option.Val.([]int64))
+		return procFunc.(OnOptValAnyProcFunc)(option.Val.([]int64))
 	default:
 		panic("not support value type")
 	}
@@ -96,7 +96,7 @@ func NewStreamProcessor(stream *Stream) *StreamProcessor {
 	}
 }
 
-func (p *StreamProcessor) OnNone(key interface{}, procFunc onOptValNoneProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnNone(key interface{}, procFunc OnOptValNoneProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeNone,
 		onProcFunc: procFunc,
@@ -104,7 +104,7 @@ func (p *StreamProcessor) OnNone(key interface{}, procFunc onOptValNoneProcFunc)
 	return p
 }
 
-func (p *StreamProcessor) OnInt32(key interface{}, procFunc onOptValInt32ProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnInt32(key interface{}, procFunc OnOptValInt32ProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeInt32,
 		onProcFunc: procFunc,
@@ -112,7 +112,7 @@ func (p *StreamProcessor) OnInt32(key interface{}, procFunc onOptValInt32ProcFun
 	return p
 }
 
-func (p *StreamProcessor) OnInt32List(key interface{}, procFunc onOptValInt32ListProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnInt32List(key interface{}, procFunc OnOptValInt32ListProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeInt32List,
 		onProcFunc: procFunc,
@@ -120,7 +120,7 @@ func (p *StreamProcessor) OnInt32List(key interface{}, procFunc onOptValInt32Lis
 	return p
 }
 
-func (p *StreamProcessor) OnInt64List(key interface{}, procFunc onOptValInt64ListProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnInt64List(key interface{}, procFunc OnOptValInt64ListProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeInt64List,
 		onProcFunc: procFunc,
@@ -128,7 +128,7 @@ func (p *StreamProcessor) OnInt64List(key interface{}, procFunc onOptValInt64Lis
 	return p
 }
 
-func (p *StreamProcessor) OnUint32(key interface{}, procFunc onOptValUint32ProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnUint32(key interface{}, procFunc OnOptValUint32ProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeUint32,
 		onProcFunc: procFunc,
@@ -136,7 +136,7 @@ func (p *StreamProcessor) OnUint32(key interface{}, procFunc onOptValUint32ProcF
 	return p
 }
 
-func (p *StreamProcessor) OnInt64(key interface{}, procFunc onOptValInt64ProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnInt64(key interface{}, procFunc OnOptValInt64ProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeInt64,
 		onProcFunc: procFunc,
@@ -144,7 +144,7 @@ func (p *StreamProcessor) OnInt64(key interface{}, procFunc onOptValInt64ProcFun
 	return p
 }
 
-func (p *StreamProcessor) OnUint64(key interface{}, procFunc onOptValUint64ProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnUint64(key interface{}, procFunc OnOptValUint64ProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeUint64,
 		onProcFunc: procFunc,
@@ -152,7 +152,7 @@ func (p *StreamProcessor) OnUint64(key interface{}, procFunc onOptValUint64ProcF
 	return p
 }
 
-func (p *StreamProcessor) OnString(key interface{}, procFunc onOptValStringProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnString(key interface{}, procFunc OnOptValStringProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeString,
 		onProcFunc: procFunc,
@@ -160,7 +160,7 @@ func (p *StreamProcessor) OnString(key interface{}, procFunc onOptValStringProcF
 	return p
 }
 
-func (p *StreamProcessor) OnStringList(key interface{}, procFunc onOptValStringListProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnStringList(key interface{}, procFunc OnOptValStringListProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeStringList,
 		onProcFunc: procFunc,
@@ -168,7 +168,7 @@ func (p *StreamProcessor) OnStringList(key interface{}, procFunc onOptValStringL
 	return p
 }
 
-func (p *StreamProcessor) OnUint32List(key interface{}, procFunc onOptValUint32ListProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnUint32List(key interface{}, procFunc OnOptValUint32ListProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeUint32List,
 		onProcFunc: procFunc,
@@ -176,7 +176,7 @@ func (p *StreamProcessor) OnUint32List(key interface{}, procFunc onOptValUint32L
 	return p
 }
 
-func (p *StreamProcessor) OnUint64List(key interface{}, procFunc onOptValUint64ProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnUint64List(key interface{}, procFunc OnOptValUint64ProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeUint64List,
 		onProcFunc: procFunc,
@@ -184,7 +184,7 @@ func (p *StreamProcessor) OnUint64List(key interface{}, procFunc onOptValUint64P
 	return p
 }
 
-func (p *StreamProcessor) OnTimestampRange(key interface{}, procFunc onOptValTimestampRangeProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnTimestampRange(key interface{}, procFunc OnOptValTimestampRangeProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeTimestampRange,
 		onProcFunc: procFunc,
@@ -192,7 +192,7 @@ func (p *StreamProcessor) OnTimestampRange(key interface{}, procFunc onOptValTim
 	return p
 }
 
-func (p *StreamProcessor) OnBool(key interface{}, procFunc onOptValBoolProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnBool(key interface{}, procFunc OnOptValBoolProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeBool,
 		onProcFunc: procFunc,
@@ -200,7 +200,7 @@ func (p *StreamProcessor) OnBool(key interface{}, procFunc onOptValBoolProcFunc)
 	return p
 }
 
-func (p *StreamProcessor) OnAny(key interface{}, procFunc onOptValUint64ProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnAny(key interface{}, procFunc OnOptValUint64ProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeAny,
 		onProcFunc: procFunc,
