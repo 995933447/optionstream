@@ -176,7 +176,7 @@ func (p *StreamProcessor) OnUint32List(key interface{}, procFunc OnOptValUint32L
 	return p
 }
 
-func (p *StreamProcessor) OnUint64List(key interface{}, procFunc OnOptValUint64ProcFunc) *StreamProcessor {
+func (p *StreamProcessor) OnUint64List(key interface{}, procFunc OnOptValUint64ListProcFunc) *StreamProcessor {
 	p.optProcessorMap[key] = &optionProcessor{
 		valType: OptValTypeUint64List,
 		onProcFunc: procFunc,
